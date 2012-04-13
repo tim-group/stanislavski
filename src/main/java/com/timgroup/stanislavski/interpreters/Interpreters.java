@@ -3,15 +3,15 @@ package com.timgroup.stanislavski.interpreters;
 import com.google.common.base.Function;
 import com.timgroup.stanislavski.reflection.MethodCall;
 
-public final class KeyValuePairInterpreters {
+public final class Interpreters {
 
-    private KeyValuePairInterpreters() {
+    private Interpreters() {
     }
 
-    public static final class ExtractorSpecifier<K> {
+    public static final class KeyValuePairInterpreterBuilder<K> {
         private final Function<MethodCall, K> keyInterpreter;
 
-        private ExtractorSpecifier(Function<MethodCall, K> keyInterpreter) {
+        private KeyValuePairInterpreterBuilder(Function<MethodCall, K> keyInterpreter) {
             this.keyInterpreter = keyInterpreter;
         }
 
@@ -24,8 +24,8 @@ public final class KeyValuePairInterpreters {
         }
     }
 
-    public static ExtractorSpecifier<String> nameValuePairInterpreter(Function<MethodCall, String> nameExtractor) {
-        return new ExtractorSpecifier<String>(nameExtractor);
+    public static <K> KeyValuePairInterpreterBuilder<K> keyValuePairInterpreter(Function<MethodCall, K> keyExtractor) {
+        return new KeyValuePairInterpreterBuilder<K>(keyExtractor);
     }
 
 }

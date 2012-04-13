@@ -33,7 +33,7 @@ public class KeyValuePairInterpretersTest {
     @Test public void
     constructs_a_name_value_interpreter_using_supplied_key_and_value_interpreters() throws SecurityException, NoSuchMethodException {
         KeyValuePairInterpreter<String, String> interpreter = 
-                KeyValuePairInterpreters.nameValuePairInterpreter(ExtractorFor.theMethodName()
+                Interpreters.keyValuePairInterpreter(ExtractorFor.theMethodName()
                                                                               .compose(toUpperCase())
                                                                               .chain(Alias.OVERRIDER))
                                         .obtainingValueWith(ExtractorFor.theFirstArgument()
