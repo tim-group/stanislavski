@@ -13,7 +13,7 @@ import com.timgroup.stanislavski.reflection.MethodCall;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class KeyValuePairInterpretersTest {
+public class InterpretersTest {
 
     private Function<String, String> toUpperCase() {
         return new Function<String, String>() {
@@ -34,10 +34,10 @@ public class KeyValuePairInterpretersTest {
     constructs_a_name_value_interpreter_using_supplied_key_and_value_interpreters() throws SecurityException, NoSuchMethodException {
         KeyValuePairInterpreter<String, String> interpreter = 
                 Interpreters.keyValuePairInterpreter(ExtractorFor.theMethodName()
-                                                                              .compose(toUpperCase())
-                                                                              .chain(Alias.OVERRIDER))
-                                        .obtainingValueWith(ExtractorFor.theFirstArgument()
-                                                                        .compose(Functions.toStringFunction()));
+                                                                 .compose(toUpperCase())
+                                                                 .chain(Alias.OVERRIDER))
+                            .obtainingValueWith(ExtractorFor.theFirstArgument()
+                                                            .compose(Functions.toStringFunction()));
         
         List<MethodCall> callHistory = Lists.newArrayList(
             MethodCall.create(testMethodNamed("foo"), "bar"),
