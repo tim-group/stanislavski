@@ -8,7 +8,11 @@ import com.google.common.base.Suppliers;
 public final class Chainable<S, T> implements Function<S, T> {
     private final Function<S, T> inner;
     
-    public Chainable(Function<S, T> inner) {
+    public static <S, T> Chainable<S, T> chainable(Function<S, T> inner) {
+        return new Chainable<S, T>(inner);
+    }
+    
+    private Chainable(Function<S, T> inner) {
         this.inner = inner;
     }
     
