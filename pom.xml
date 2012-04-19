@@ -48,6 +48,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.timgroup</groupId>
+      <artifactId>karg</artifactId>
+      <version>0.7</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
       <version>1.2</version>
@@ -65,7 +71,6 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -13,6 +14,13 @@ import com.google.common.collect.ImmutableList.Builder;
 
 public final class MethodCallArgument<F> {
 
+    public static final Function<MethodCallArgument<?>, Object> TO_VALUE =
+        new Function<MethodCallArgument<?>, Object>() {
+            @Override public Object apply(MethodCallArgument<?> arg0) {
+                return arg0.value();
+            }
+        };
+        
     public static List<MethodCallArgument<?>> wrapArguments(Method method, Object[] args) {
         if (args == null) {
             return Collections.emptyList();

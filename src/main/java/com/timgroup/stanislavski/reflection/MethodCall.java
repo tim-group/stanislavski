@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class MethodCall {
     private final Method method;
     private final Object[] rawArgs;
@@ -48,19 +50,19 @@ public class MethodCall {
         return arguments.get(0);
     }
     
-    public Object applyTo(Object target) {
+    public Object applyTo(Object target) throws Throwable {
         try {
             return this.method.invoke(target, rawArgs);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw e.getCause();
         }
     }
     
     @Override public String toString() {
         return String.format("%s: %s", method, arguments);
+    }
+
+    public List<Object> argumentValues() {
+        return Lists.transform(arguments, MethodCallArgument.TO_VALUE);
     }
 }
