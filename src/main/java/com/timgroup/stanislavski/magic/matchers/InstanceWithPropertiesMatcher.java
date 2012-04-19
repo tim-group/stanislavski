@@ -1,14 +1,14 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-public class JavaBeanMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
+public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
     private final Class<T> targetClass;
     private final Matcher<T> propertiesMatcher;
 
-    public JavaBeanMatcher(Class<T> targetClass, Matcher<T> propertiesMatcher) {
+    public InstanceWithPropertiesMatcher(Class<T> targetClass, Matcher<T> propertiesMatcher) {
         this.targetClass = targetClass;
         this.propertiesMatcher = propertiesMatcher;
     }

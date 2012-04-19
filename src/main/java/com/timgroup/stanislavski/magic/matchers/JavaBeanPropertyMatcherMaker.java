@@ -1,13 +1,14 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.timgroup.karg.reference.Getter;
-import com.timgroup.karg.reflection.AccessorCatalogue;
+import com.timgroup.karg.reflection.ReflectiveAccessorFactory;
 import com.timgroup.stanislavski.interpreters.MethodCallInterpreter;
+import com.timgroup.stanislavski.magic.MethodNameToPropertyNameTranslator;
 import com.timgroup.stanislavski.reflection.MethodCall;
 
 public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Matcher<? super T>> {
@@ -16,14 +17,31 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
         return Iterables.transform(callHistory, forClass(targetClass));
     }
     
+    public static <T> JavaBeanPropertyMatcherMaker<T> forAnyClass() {
+        return new JavaBeanPropertyMatcherMaker<T>();
+    }
+    
     public static <T> JavaBeanPropertyMatcherMaker<T> forClass(Class<T> targetClass) {
         return new JavaBeanPropertyMatcherMaker<T>(targetClass);
     }
     
-    private final AccessorCatalogue<T> catalogue;
+    private final Function<String, Getter<T, ?>> getterProvider;
+    
+    public JavaBeanPropertyMatcherMaker() {
+        this.getterProvider = new Function<String, Getter<T, ?>>() {
+            @Override public Getter<T, ?> apply(String arg0) {
+                return LateBindingGetter.forPropertyNamed(arg0);
+            }
+        };
+    }
     
     public JavaBeanPropertyMatcherMaker(Class<T> targetClass) {
-        this.catalogue = AccessorCatalogue.forClass(targetClass);
+        final ReflectiveAccessorFactory<T> catalogue = ReflectiveAccessorFactory.forClass(targetClass);
+        this.getterProvider = new Function<String, Getter<T, ?>>() {
+            @Override public Getter<T, ?> apply(String name) {
+                return catalogue.getGetter(name);
+            }
+        };
     }
 
     @Override
@@ -48,25 +66,26 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
         }
     }
     
-    public Matcher<? super T> make(MethodCall arg0, Matcher<?> matcher) {
-        return make(getPropertyName(arg0), matcher);
+    public <V> Matcher<? super T> make(MethodCall methodCall, Matcher<? super V> matcher) {
+        return make(getPropertyName(methodCall), matcher);
     }
     
-    public Matcher<? super T> make(String propertyName, Matcher<?> matcher) {
-        Getter<T, ?> getter = catalogue.getAccessor(propertyName);
-        Preconditions.checkNotNull(getter, "No accessible property found with name \"%s\"", propertyName);
-        return new JavaBeanPropertyMatcher<T>(propertyName, getter,matcher);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <V> Matcher<? super T> make(String propertyName, Matcher<? super V> matcher) {
+        Getter<T, V> getter = (Getter) getterProvider.apply(propertyName);
+        return JavaBeanPropertyMatcher.matching(propertyName, getter, matcher);
     }
     
-    private Matcher<?> getMatcher(MethodCall methodCall) {
-        final Object firstArgumentValue = methodCall.firstArgument().value();
+    @SuppressWarnings("unchecked")
+    private <V> Matcher<? super V> getMatcher(MethodCall methodCall) {
+        final V firstArgumentValue = (V) methodCall.firstArgument().value();
         if (firstArgumentValue instanceof Matcher) {
-            return (Matcher<?>) firstArgumentValue;
+            return (Matcher<? super V>) firstArgumentValue;
         }
         return Matchers.equalTo(firstArgumentValue);
     }
 
     private String getPropertyName(MethodCall methodCall) {
-        return MethodNameToPropertyNameInterpreter.interpret(methodCall);
+        return MethodNameToPropertyNameTranslator.interpret(methodCall);
     }
 }

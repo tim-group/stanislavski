@@ -1,4 +1,4 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -45,9 +45,9 @@ public class AMatcher<T> extends TypeSafeDiagnosingMatcher<Matcher<T>> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("A matcher for a ").appendValue(instance.getClass().getSimpleName()).appendText( "that should ");
+        description.appendText("A matcher for a ").appendText(instance.getClass().getSimpleName()).appendText( " that should ");
         if (!shouldMatch) {
-            description.appendText("not ");
+            description.appendText(" fail to ");
         }
         description.appendText("match the instance ").appendValue(instance);
         if (descriptionMatcher != null) {

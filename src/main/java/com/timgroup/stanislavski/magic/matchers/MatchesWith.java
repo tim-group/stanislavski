@@ -1,4 +1,4 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

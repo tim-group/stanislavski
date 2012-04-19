@@ -1,4 +1,4 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -50,6 +50,6 @@ public final class MagicJavaBeanMatcher<T, I> implements Predicate<MethodCall>, 
     
     private Matcher<T> makeMatcherFrom(Iterable<MethodCall> callHistory) {
         Matcher<T> propertiesMatcher = Matchers.allOf(JavaBeanPropertyMatcherMaker.interpret(targetClass, callHistory));
-        return new JavaBeanMatcher<T>(targetClass, propertiesMatcher);
+        return new InstanceWithPropertiesMatcher<T>(targetClass, propertiesMatcher);
     }
 }

@@ -1,4 +1,4 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -6,13 +6,17 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.timgroup.karg.reference.Getter;
 
-public class JavaBeanPropertyMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
+public class JavaBeanPropertyMatcher<T, V> extends TypeSafeDiagnosingMatcher<T> {
 
+    public static <T, V> JavaBeanPropertyMatcher<T, V> matching(String propertyName, Getter<T, V> getter, Matcher<? super V> matcher) {
+        return new JavaBeanPropertyMatcher<T, V>(propertyName, getter, matcher);
+    }
+    
     private final String propertyName;
-    private final Getter<T, ?> getter;
-    private final Matcher<?> matcher;
+    private final Getter<T, V> getter;
+    private final Matcher<? super V> matcher;
 
-    public JavaBeanPropertyMatcher(String propertyName, Getter<T, ?> getter, Matcher<?> matcher) {
+    public JavaBeanPropertyMatcher(String propertyName, Getter<T, V> getter, Matcher<? super V> matcher) {
         this.propertyName = propertyName;
         this.getter = getter;
         this.matcher = matcher;
@@ -30,7 +34,6 @@ public class JavaBeanPropertyMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
         if (matcher.matches(propertyValue)) {
             return true;
         }
-        mismatchDescription.appendText("[").appendText(propertyName).appendText("] ");
         matcher.describeMismatch(propertyValue, mismatchDescription);
         return false;
     }

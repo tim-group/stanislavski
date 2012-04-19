@@ -1,4 +1,4 @@
-package com.timgroup.stanislavski.magic;
+package com.timgroup.stanislavski.magic.matchers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.common.base.Joiner;
 import com.timgroup.stanislavski.interpreters.Alias;
 import com.timgroup.stanislavski.interpreters.MethodCallInterpreter;
+import com.timgroup.stanislavski.matchers.AMatcher;
 import com.timgroup.stanislavski.reflection.MethodCall;
 
 public class MagicJavaBeanMatcherTest {
@@ -43,7 +44,7 @@ public class MagicJavaBeanMatcherTest {
         @Override
         public Matcher<?> apply(MethodCall methodCall) {
             String fullName = Joiner.on(" ").join(methodCall.argumentValues());
-            return JavaBeanPropertyMatcherMaker.forClass(Person.class)
+            return JavaBeanPropertyMatcherMaker.forAnyClass()
                                                .make(methodCall, Matchers.equalTo(fullName));
         }
     }
@@ -84,5 +85,12 @@ public class MagicJavaBeanMatcherTest {
         assertThat(matcher.named("Julius", "Caesar"),
                 AMatcher.that_matches(person)
                         .with_the_description("A Person with ([name] \"Julius Caesar\")"));
+    }
+    
+    @Test public void
+    gives_a_meaningful_mismatch_description() {
+        assertThat(matcher.named("Tiberius", "Caesar"),
+                AMatcher.that_fails_to_match(person)
+                        .with_the_mismatch_description("[name] \"Tiberius Caesar\" was \"Julius Caesar\""));
     }
 }

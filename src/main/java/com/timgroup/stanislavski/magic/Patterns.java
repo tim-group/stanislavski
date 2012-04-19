@@ -1,19 +1,20 @@
 package com.timgroup.stanislavski.magic;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
-public final class Patterns {
-    public static List<String> matching(Patterns.PatternGenerator generator) {
+final class Patterns {
+    public static List<Pattern> matching(PatternGenerator generator) {
         return generator.generate();
     }
     
     public static interface PatternGenerator {
-        List<String> generate();
+        List<Pattern> generate();
     }
     
-    public static class One implements Patterns.PatternGenerator {
+    public static class One implements PatternGenerator {
         public static Patterns.One of(String...choices) {
             return new One(choices);
         }
@@ -29,15 +30,15 @@ public final class Patterns {
             return this;
         }
 
-        @Override public List<String> generate() {
-            List<String> patterns = Lists.newLinkedList();
+        @Override public List<Pattern> generate() {
+            List<Pattern> patterns = Lists.newLinkedList();
             generate(0, patterns, "");
             return patterns;
         }
         
-        private void generate(int pos, List<String> patterns, String prefix) {
+        private void generate(int pos, List<Pattern> patterns, String prefix) {
             if (pos >= choiceSets.size()) {
-                patterns.add(prefix);
+                patterns.add(Pattern.compile(prefix));
                 return;
             }
             
