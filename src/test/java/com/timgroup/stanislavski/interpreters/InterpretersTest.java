@@ -26,7 +26,7 @@ public class InterpretersTest {
     public static interface TestInterface {
         public TestInterface foo(String value);
         
-        @Alias("quux")
+        @AddressesProperty("quux")
         public TestInterface baz(String value);
     }
     
@@ -35,7 +35,7 @@ public class InterpretersTest {
         KeyValuePairInterpreter<String, String> interpreter = 
                 Interpreters.keyValuePairInterpreter(ExtractorFor.theMethodName()
                                                                  .compose(toUpperCase())
-                                                                 .chain(Alias.OVERRIDER))
+                                                                 .chain(AddressesProperty.OVERRIDER))
                             .obtainingValueWith(ExtractorFor.theFirstArgument()
                                                             .compose(Functions.toStringFunction()));
         

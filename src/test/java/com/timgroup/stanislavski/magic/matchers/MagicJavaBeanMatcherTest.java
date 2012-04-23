@@ -8,7 +8,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.google.common.base.Joiner;
-import com.timgroup.stanislavski.interpreters.Alias;
+import com.timgroup.stanislavski.interpreters.AddressesProperty;
 import com.timgroup.stanislavski.interpreters.MethodCallInterpreter;
 import com.timgroup.stanislavski.matchers.AMatcher;
 import com.timgroup.stanislavski.reflection.MethodCall;
@@ -34,10 +34,10 @@ public class MagicJavaBeanMatcherTest {
         public PersonMatcher with_the_name_of(String name);
         public PersonMatcher withName(Matcher<? super String> nameMatcher);
         
-        @Alias("name") @MatchesWith(ForenameSurnameMatcher.class)
+        @AddressesProperty("name") @MatchesWith(ForenameSurnameMatcher.class)
         public PersonMatcher named(String forename, String surname);
-        @Alias("age") public PersonMatcher aged(int age);
-        @Alias("age") public PersonMatcher aged(Matcher<? super Integer> ageMatcher);
+        @AddressesProperty("age") public PersonMatcher aged(int age);
+        @AddressesProperty("age") public PersonMatcher aged(Matcher<? super Integer> ageMatcher);
     }
     
     public static final class ForenameSurnameMatcher implements MethodCallInterpreter<Matcher<?>> {

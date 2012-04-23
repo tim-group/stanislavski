@@ -11,7 +11,7 @@ import com.timgroup.stanislavski.reflection.MethodCall;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Alias {
-    public static Function<MethodCall, Optional<String>> OVERRIDER = AnnotationOverride.obtainingValueOf(Alias.class);
+public @interface AddressesProperty {
+    public static Function<MethodCall, Optional<String>> OVERRIDER = AnnotationOverride.obtainingValueOf(AddressesProperty.class);
     String value();
 }
