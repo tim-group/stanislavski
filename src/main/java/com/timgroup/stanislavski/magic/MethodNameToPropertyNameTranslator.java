@@ -1,9 +1,5 @@
 package com.timgroup.stanislavski.magic;
 
-import static com.timgroup.karg.naming.TargetNameFormatter.LOWER_CAMEL_CASE;
-import static com.timgroup.karg.naming.TargetNameFormatter.UNDERSCORE_SEPARATED;
-import static com.timgroup.karg.naming.TargetNameFormatter.UPPER_CAMEL_CASE;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +10,10 @@ import com.timgroup.stanislavski.interpreters.AddressesProperty;
 import com.timgroup.stanislavski.interpreters.ExtractorFor;
 import com.timgroup.stanislavski.magic.Patterns.One;
 import com.timgroup.stanislavski.reflection.MethodCall;
+
+import static com.timgroup.karg.naming.TargetNameFormatter.LOWER_CAMEL_CASE;
+import static com.timgroup.karg.naming.TargetNameFormatter.UNDERSCORE_SEPARATED;
+import static com.timgroup.karg.naming.TargetNameFormatter.UPPER_CAMEL_CASE;
 
 public class MethodNameToPropertyNameTranslator implements Function<String, String> {
 
@@ -31,7 +31,7 @@ public class MethodNameToPropertyNameTranslator implements Function<String, Stri
     
     private static final List<Pattern> UNDERSCORE_PATTERNS = 
         Patterns.matching(One.of("with_", "having_")
-                             .followedByOneOf("an_", "a_", "the_")
+                             .followedByOneOf("an_", "a_", "the_", "")
                              .followedByOneOf("([a-z].*)_of", "([a-z].*)"));
     
     @Override
