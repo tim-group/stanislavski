@@ -1,4 +1,4 @@
-== Methods without madness
+# Methods without madness
 
 [Stanislavski](http://github.com/youdevise/stanislavski) is a library for doing things with method calls:
 
