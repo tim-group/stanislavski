@@ -6,6 +6,6 @@
   * Interpreting them, and
   * Using them to build useful objects like [Java Beans](http://en.wikipedia.org/wiki/JavaBeans) and [Hamcrest Matchers](http://code.google.com/p/hamcrest/).
 
-For a basic introduction, see the wiki article on [Bean Matching Made Easier (with MagicJavaBeanMatchers)](https://github.com/youdevise/stanislavski/wiki/Magic-Java-Bean-Matchers).
+For a basic introduction, see the wiki articles on [Bean Matching Made Easier (with MagicJavaBeanMatchers)](https://github.com/youdevise/stanislavski/wiki/Magic-Java-Bean-Matchers) and [Builders Without Boilerplate](https://github.com/youdevise/stanislavski/wiki/MagicRecordBuilders).
 
 
