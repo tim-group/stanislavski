@@ -11,48 +11,26 @@ import com.timgroup.stanislavski.magic.matchers.MagicJavaBeanMatcher;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class MagicBeanRecordBuilderTest {
+public class MagicImmutableRecordBuilderTest {
     
-    public static class BeanRecord {
+    public static class ImmutableRecord {
 
-        private String name;
-        private int age = 0;
-        private String favouriteColour;
-        private String quest;
+        public final String name;
+        public final int age;
+        public final String favouriteColour;
+        public final String quest;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
+        public ImmutableRecord(@AssignedTo("name") String name,
+                               @AssignedTo(value="age") int age,
+                               @AssignedTo("favouriteColour") String favouriteColour,
+                               @AssignedTo("quest") String quest) {
             this.name = name;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public void setAge(int age) {
             this.age = age;
-        }
-
-        public String getFavouriteColour() {
-            return favouriteColour;
-        }
-
-        public void setFavouriteColour(String favouriteColour) {
             this.favouriteColour = favouriteColour;
-        }
-
-        public String getQuest() {
-            return quest;
-        }
-
-        public void setQuest(String quest) {
             this.quest = quest;
         }
-
-        public static interface Builder extends Supplier<BeanRecord> {
+        
+        public static interface Builder extends Supplier<ImmutableRecord> {
             Builder withName(String name);
             Builder withAge(Integer age);
             Builder withFavouriteColour(String favouriteColour);
@@ -66,11 +44,11 @@ public class MagicBeanRecordBuilderTest {
         }
 
         public static Builder builder() {
-            return MagicRecordBuilder.building(BeanRecord.class).using(Builder.class);
+            return MagicRecordBuilder.building(ImmutableRecord.class).using(ImmutableRecord.Builder.class);
         }
     }
 
-    public static interface RecordMatcher extends Matcher<BeanRecord> {
+    public static interface RecordMatcher extends Matcher<ImmutableRecord> {
         RecordMatcher with_name(String name);
         RecordMatcher with_name(Matcher<? super String> name);
         RecordMatcher with_age(Integer age);
@@ -80,20 +58,19 @@ public class MagicBeanRecordBuilderTest {
     }
 
     private RecordMatcher a_record() {
-        return MagicJavaBeanMatcher.matching(BeanRecord.class).using(RecordMatcher.class);
+        return MagicJavaBeanMatcher.matching(ImmutableRecord.class).using(RecordMatcher.class);
     }
 
     @Test
     public void builds_a_record_using_underscored_methods() {
-        BeanRecord record = BeanRecord.builder().with_name("Dominic").with_age(37).with_favourite_colour("Crimson").get();
+        ImmutableRecord record = ImmutableRecord.builder().with_name("Dominic").with_age(37).with_favourite_colour("Crimson").get();
 
         assertThat(record, a_record().with_name(Matchers.startsWith("D")).with_age(37).with_favourite_colour("Crimson"));
     }
 
     @Test
     public void builds_a_record_using_camelCased_methods() {
-        BeanRecord.Builder builder = BeanRecord.builder();
-        BeanRecord record = builder.withName("Dominic").withAge(37).withFavouriteColour("Crimson").get();
+        ImmutableRecord record = ImmutableRecord.builder().withName("Dominic").withAge(37).withFavouriteColour("Crimson").get();
 
         assertThat(record.name, is("Dominic"));
         assertThat(record.age, is(37));
@@ -102,8 +79,7 @@ public class MagicBeanRecordBuilderTest {
 
     @Test
     public void permits_aliasing_of_methods_using_annotations() {
-        BeanRecord record = BeanRecord.builder().havingTheNobleQuest("I seek the Castle Anthrax!").get();
-
-        assertThat(record, a_record().having_the_noble_quest("I seek the Castle Anthrax!"));
+        ImmutableRecord.Builder builder = ImmutableRecord.builder();
+        assertThat(builder.with_age(37).havingTheNobleQuest("I seek the Castle Anthrax!").get(), a_record().having_the_noble_quest("I seek the Castle Anthrax!"));
     }
 }

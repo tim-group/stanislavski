@@ -58,7 +58,7 @@ public class MagicTypedKeywordRecordBuilderTest {
         }
         
         public static Builder builder() {
-            return MagicRecordBuilder.proxying(TypedKeywordRecord.Builder.class, TypedKeywordRecord.class);
+            return MagicRecordBuilder.building(TypedKeywordRecord.class).using(Builder.class);
         }
     }
     
@@ -78,8 +78,7 @@ public class MagicTypedKeywordRecordBuilderTest {
     
     @Test public void
     builds_a_record_using_underscored_methods() {
-        TypedKeywordRecord.Builder builder = MagicRecordBuilder.proxying(TypedKeywordRecord.Builder.class, TypedKeywordRecord.class);
-        TypedKeywordRecord record = builder
+        TypedKeywordRecord record = TypedKeywordRecord.builder()
                 .with_name("Dominic")
                 .with_age(37)
                 .with_favourite_colour("Crimson")
@@ -92,8 +91,7 @@ public class MagicTypedKeywordRecordBuilderTest {
     
     @Test public void
     builds_a_record_using_camelCased_methods() {
-        TypedKeywordRecord.Builder builder = MagicRecordBuilder.proxying(TypedKeywordRecord.Builder.class, TypedKeywordRecord.class);
-        TypedKeywordRecord record = builder
+        TypedKeywordRecord record = TypedKeywordRecord.builder()
                 .withName("Dominic")
                 .withAge(37)
                 .withFavouriteColour("Crimson")
@@ -106,8 +104,7 @@ public class MagicTypedKeywordRecordBuilderTest {
     
     @Test public void
     permits_aliasing_of_methods_using_annotations() {
-        TypedKeywordRecord.Builder builder = MagicRecordBuilder.proxying(TypedKeywordRecord.Builder.class, TypedKeywordRecord.class);
-        TypedKeywordRecord record = builder
+        TypedKeywordRecord record = TypedKeywordRecord.builder()
                 .havingTheNobleQuest("I seek the Castle Anthrax!")
                 .get();
         

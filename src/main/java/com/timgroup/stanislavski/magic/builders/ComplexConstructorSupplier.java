@@ -26,9 +26,10 @@ public class ComplexConstructorSupplier<T> implements Supplier<T> {
         return this;
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ComplexConstructorSupplier<T> withArg(Supplier supplier) {
-        args.add(supplier);
+    public ComplexConstructorSupplier<T> withArgs(Object...args) {
+        for (Object arg : args) {
+            withArg(arg);
+        }
         return this;
     }
     
