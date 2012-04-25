@@ -78,7 +78,7 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
     
     @SuppressWarnings("unchecked")
     private <V> Matcher<? super V> getMatcher(MethodCall methodCall) {
-        final V firstArgumentValue = (V) methodCall.firstArgument().value();
+        Object firstArgumentValue = methodCall.firstArgument().value();
         if (firstArgumentValue instanceof Matcher) {
             return (Matcher<? super V>) firstArgumentValue;
         }
