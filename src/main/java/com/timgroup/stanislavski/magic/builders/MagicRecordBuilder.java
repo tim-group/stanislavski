@@ -6,6 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Supplier;
 import com.timgroup.stanislavski.interpreters.AddressesProperty;
+import com.timgroup.stanislavski.interpreters.AnnotationOverride;
 import com.timgroup.stanislavski.interpreters.ExtractorFor;
 import com.timgroup.stanislavski.interpreters.Interpreters;
 import com.timgroup.stanislavski.magic.MethodNameToPropertyNameTranslator;
@@ -27,7 +28,7 @@ public final class MagicRecordBuilder {
             CallHistoryInterpreter<Map<String, Object>> interpreter =
                 Interpreters.keyValuePairInterpreter(ExtractorFor.theMethodName()
                                                                  .compose(new MethodNameToPropertyNameTranslator())
-                                                                 .chain(AddressesProperty.OVERRIDER))
+                                                                 .chain(AnnotationOverride.<AddressesProperty, String>obtainingValueOf(AddressesProperty.class)))
                             .usingFirstArgument();
             
             MapToRecordConverter<T> converter = MapToRecordConverter.forClass(recordType);

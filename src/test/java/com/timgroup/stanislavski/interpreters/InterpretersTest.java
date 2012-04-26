@@ -35,7 +35,7 @@ public class InterpretersTest {
         KeyValuePairInterpreter<String, String> interpreter = 
                 Interpreters.keyValuePairInterpreter(ExtractorFor.theMethodName()
                                                                  .compose(toUpperCase())
-                                                                 .chain(AddressesProperty.OVERRIDER))
+                                                                 .chain(AnnotationOverride.<AddressesProperty, String>obtainingValueOf(AddressesProperty.class)))
                             .obtainingValueWith(ExtractorFor.theFirstArgument()
                                                             .compose(Functions.toStringFunction()));
         

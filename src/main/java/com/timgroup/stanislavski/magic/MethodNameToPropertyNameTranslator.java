@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import com.google.common.base.Function;
 import com.timgroup.karg.naming.TargetNameFormatter;
 import com.timgroup.stanislavski.interpreters.AddressesProperty;
+import com.timgroup.stanislavski.interpreters.AnnotationOverride;
 import com.timgroup.stanislavski.interpreters.ExtractorFor;
 import com.timgroup.stanislavski.magic.Patterns.One;
 import com.timgroup.stanislavski.reflection.MethodCall;
@@ -20,7 +21,7 @@ public class MethodNameToPropertyNameTranslator implements Function<String, Stri
     public static String interpret(MethodCall methodCall) {
         return ExtractorFor.theMethodName()
                            .compose(new MethodNameToPropertyNameTranslator())
-                           .chain(AddressesProperty.OVERRIDER)
+                           .chain(AnnotationOverride.<AddressesProperty, String>obtainingValueOf(AddressesProperty.class))
                            .apply(methodCall);
     }
     
