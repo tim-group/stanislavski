@@ -15,7 +15,7 @@ public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" with ");
+        description.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" ");
         propertiesMatcher.describeTo(description);
     }
 
@@ -35,6 +35,7 @@ public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<
             return true;
         }
         
+        mismatchDescription.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" ");
         propertiesMatcher.describeMismatch(item, mismatchDescription);
         return false;
     }

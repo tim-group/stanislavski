@@ -8,9 +8,9 @@ import java.util.List;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableList.Builder;
 
 public final class MethodCallArgument<F> {
 
@@ -41,7 +41,7 @@ public final class MethodCallArgument<F> {
     @SuppressWarnings("unchecked")
     public static <F> MethodCallArgument<F> create(F argument, Annotation...parameterAnnotations) {
         List<Annotation> parameterAnnotationList = Lists.newArrayList(parameterAnnotations);
-        return new MethodCallArgument<F>(argument, (Class<F>) argument.getClass(), parameterAnnotationList);
+        return new MethodCallArgument<F>(argument, argument == null ? null : (Class<F>) argument.getClass(), parameterAnnotationList);
     }
     
     private MethodCallArgument(F value, Class<F> type, List<Annotation> parameterAnnotations) {

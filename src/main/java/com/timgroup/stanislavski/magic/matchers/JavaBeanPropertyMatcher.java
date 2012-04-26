@@ -24,7 +24,7 @@ public class JavaBeanPropertyMatcher<T, V> extends TypeSafeDiagnosingMatcher<T> 
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("[").appendText(propertyName).appendText("] ");
+        description.appendText("whose ").appendText(propertyName).appendText(" ");
         matcher.describeTo(description);
     }
 
@@ -42,6 +42,7 @@ public class JavaBeanPropertyMatcher<T, V> extends TypeSafeDiagnosingMatcher<T> 
             return true;
         }
         
+        mismatchDescription.appendText("whose ").appendText(propertyName).appendText(" ");
         matcher.describeMismatch(propertyValue, mismatchDescription);
         return false;
     }

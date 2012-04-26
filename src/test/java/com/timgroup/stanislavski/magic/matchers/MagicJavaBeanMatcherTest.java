@@ -11,7 +11,7 @@ import com.timgroup.stanislavski.matchers.AMatcher;
 import com.timgroup.stanislavski.reflection.MethodCall;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class MagicJavaBeanMatcherTest {
 
@@ -53,7 +53,7 @@ public class MagicJavaBeanMatcherTest {
         public Matcher<?> apply(MethodCall methodCall) {
             String fullName = Joiner.on(" ").join(methodCall.argumentValues());
             return JavaBeanPropertyMatcherMaker.forAnyClass()
-                                               .make(methodCall, Matchers.equalTo(fullName));
+                                               .make(methodCall, Matchers.is(fullName));
         }
     }
     
@@ -66,43 +66,50 @@ public class MagicJavaBeanMatcherTest {
     
     @Test public void
     matches_a_property_identified_by_the_method_name() {
-        assertThat(matcher().withName(equalTo("Julius Caesar")),
+        assertThat(matcher().withName(is("Julius Caesar")),
                    AMatcher.that_matches(person)
-                           .with_the_description("A Person with ([name] \"Julius Caesar\")"));
+                           .with_the_description("A Person (whose name is \"Julius Caesar\")"));
+    }
+    
+    @Test public void
+    dsecribes_multiple_properties() {
+        assertThat(matcher().withName("Julius Caesar").aged(42),
+                   AMatcher.that_matches(person)
+                           .with_the_description("A Person (whose name is \"Julius Caesar\" and whose age is <42>)"));
     }
     
     @Test public void
     supports_underscore_formatted_method_names() {
         assertThat(matcher().with_the_name_of("Julius Caesar"),
                    AMatcher.that_matches(person)
-                           .with_the_description("A Person with ([name] \"Julius Caesar\")"));
+                           .with_the_description("A Person (whose name is \"Julius Caesar\")"));
     }
     @Test public void
     converts_literal_parameters_into_matchers() {
         assertThat(matcher().withName("Julius Caesar"),
                    AMatcher.that_matches(person)
-                           .with_the_description("A Person with ([name] \"Julius Caesar\")"));
+                           .with_the_description("A Person (whose name is \"Julius Caesar\")"));
     }
     
     @Test public void
     can_override_a_method_name_with_an_alias() {
         assertThat(matcher().aged(42),
                    AMatcher.that_matches(person)
-                           .with_the_description("A Person with ([age] <42>)"));
+                           .with_the_description("A Person (whose age is <42>)"));
     }
     
     @Test public void
     supports_special_cases_using_the_matches_with_annotation() {
         assertThat(matcher().named("Julius", "Caesar"),
                 AMatcher.that_matches(person)
-                        .with_the_description("A Person with ([name] \"Julius Caesar\")"));
+                        .with_the_description("A Person (whose name is \"Julius Caesar\")"));
     }
     
     @Test public void
     gives_a_meaningful_mismatch_description() {
-        assertThat(matcher().named("Tiberius", "Caesar"),
+        assertThat(matcher().withName("Tiberius Caesar"),
                 AMatcher.that_fails_to_match(person)
-                        .with_the_mismatch_description("[name] \"Tiberius Caesar\" was \"Julius Caesar\""));
+                        .with_the_mismatch_description("A Person whose name is \"Tiberius Caesar\" whose name was \"Julius Caesar\""));
     }
     
     @Test public void
@@ -111,7 +118,7 @@ public class MagicJavaBeanMatcherTest {
         assertThat(matcher().is_a_civilian(), AMatcher.that_matches(person));
         assertThat(matcher().is_a_superhero(), AMatcher.that_matches(elkman));
         assertThat(matcher().is_a_civilian(), AMatcher.that_fails_to_match(elkman)
-                                                      .with_the_mismatch_description("[hasSuperpowers] <false> was <true>"));
+                                                      .with_the_mismatch_description("A Person whose hasSuperpowers is <false> whose hasSuperpowers was <true>"));
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -120,5 +127,11 @@ public class MagicJavaBeanMatcherTest {
         Object theWrongSortOfThing = "The Wrong Sort Of Thing";
         assertThat((Matcher) matcher().is_a_civilian(), (Matcher) AMatcher.that_fails_to_match(theWrongSortOfThing)
                    .with_the_mismatch_description(String.format("was not a <%s>", Person.class)));
+    }
+    
+    @Test public void
+    can_match_null_literals() {
+        Person nemo = new Person(null, 0, false);
+        assertThat(matcher().with_the_name_of(null), AMatcher.that_matches(nemo));
     }
 }

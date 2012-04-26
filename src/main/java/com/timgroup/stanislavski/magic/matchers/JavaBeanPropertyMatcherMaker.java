@@ -58,7 +58,7 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
     }
 
     private Matcher<? super T> checksBoolean(MethodCall methodCall) {
-        return make(getPropertyName(methodCall), Matchers.equalTo(methodCall.getAnnotation(ChecksBoolean.class).value()));
+        return make(getPropertyName(methodCall), Matchers.is(methodCall.getAnnotation(ChecksBoolean.class).value()));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -91,7 +91,7 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
         if (firstArgumentValue instanceof Matcher) {
             return (Matcher<? super V>) firstArgumentValue;
         }
-        return Matchers.equalTo(firstArgumentValue);
+        return Matchers.is(firstArgumentValue);
     }
 
     private String getPropertyName(MethodCall methodCall) {
