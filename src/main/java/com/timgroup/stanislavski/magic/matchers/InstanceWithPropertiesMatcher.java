@@ -25,6 +25,12 @@ public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<
             mismatchDescription.appendText("was null");
             return false;
         }
+        
+        if (!targetClass.isAssignableFrom(item.getClass())) {
+            mismatchDescription.appendText("was not a ").appendValue(targetClass);
+            return false;
+        }
+        
         if (propertiesMatcher.matches(item)) {
             return true;
         }

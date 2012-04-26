@@ -30,10 +30,18 @@ public class JavaBeanPropertyMatcher<T, V> extends TypeSafeDiagnosingMatcher<T> 
 
     @Override
     protected boolean matchesSafely(T item, Description mismatchDescription) {
-        Object propertyValue = getter.get(item);
+        Object propertyValue;
+        try {
+            propertyValue = getter.get(item);
+        } catch (Throwable t) {
+            mismatchDescription.appendText("has no accessible property named").appendValue(propertyName);
+            return false;
+        }
+        
         if (matcher.matches(propertyValue)) {
             return true;
         }
+        
         matcher.describeMismatch(propertyValue, mismatchDescription);
         return false;
     }

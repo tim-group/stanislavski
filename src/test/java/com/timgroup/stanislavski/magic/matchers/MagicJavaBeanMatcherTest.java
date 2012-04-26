@@ -113,4 +113,12 @@ public class MagicJavaBeanMatcherTest {
         assertThat(matcher().is_a_civilian(), AMatcher.that_fails_to_match(elkman)
                                                       .with_the_mismatch_description("[hasSuperpowers] <false> was <true>"));
     }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test public void
+    does_the_right_thing_when_given_the_wrong_class() {
+        Object theWrongSortOfThing = "The Wrong Sort Of Thing";
+        assertThat((Matcher) matcher().is_a_civilian(), (Matcher) AMatcher.that_fails_to_match(theWrongSortOfThing)
+                   .with_the_mismatch_description(String.format("was not a <%s>", Person.class)));
+    }
 }
