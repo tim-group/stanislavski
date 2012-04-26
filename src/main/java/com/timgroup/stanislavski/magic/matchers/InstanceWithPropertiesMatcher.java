@@ -2,21 +2,30 @@ package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
     private final Class<T> targetClass;
-    private final Matcher<T> propertiesMatcher;
+    private final Iterable<Matcher<? super T>> propertyMatchers;
 
-    public InstanceWithPropertiesMatcher(Class<T> targetClass, Matcher<T> propertiesMatcher) {
+    public InstanceWithPropertiesMatcher(Class<T> targetClass, Iterable<Matcher<? super T>> propertyMatchers) {
         this.targetClass = targetClass;
-        this.propertiesMatcher = propertiesMatcher;
+        this.propertyMatchers = propertyMatchers;
     }
 
     @Override
     public void describeTo(Description description) {
         description.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" ");
-        propertiesMatcher.describeTo(description);
+        boolean first = true;
+        for (Matcher<? super T> propertyMatcher : propertyMatchers) {
+            if (first) {
+                first = false;
+            } else {
+                description.appendText(" and ");
+            }
+            propertyMatcher.describeTo(description);
+        }
     }
 
     @Override
@@ -31,12 +40,20 @@ public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<
             return false;
         }
         
-        if (propertiesMatcher.matches(item)) {
+        if (Matchers.allOf(propertyMatchers).matches(item)) {
             return true;
         }
         
         mismatchDescription.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" ");
-        propertiesMatcher.describeMismatch(item, mismatchDescription);
+        boolean first = true;
+        for (Matcher<? super T> propertyMatcher : propertyMatchers) {
+            if (first) {
+                first = false;
+            } else {
+                mismatchDescription.appendText(" and ");
+            }
+            propertyMatcher.describeMismatch(item, mismatchDescription);
+        }
         return false;
     }
 }
