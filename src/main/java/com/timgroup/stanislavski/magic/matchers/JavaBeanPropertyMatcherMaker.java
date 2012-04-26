@@ -49,7 +49,16 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
         if (methodCall.hasAnnotation(MatchesWith.class)) {
             return useMatchesWith(methodCall);
         }
+        
+        if (methodCall.hasAnnotation(ChecksBoolean.class)) {
+            return checksBoolean(methodCall);
+        }
+        
         return make(methodCall, getMatcher(methodCall));
+    }
+
+    private Matcher<? super T> checksBoolean(MethodCall methodCall) {
+        return make(getPropertyName(methodCall), Matchers.equalTo(methodCall.getAnnotation(ChecksBoolean.class).value()));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

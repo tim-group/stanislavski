@@ -25,12 +25,12 @@ public class MethodNameToPropertyNameTranslator implements Function<String, Stri
     }
     
     private static final List<Pattern> NO_UNDERSCORE_PATTERNS = 
-        Patterns.matching(One.of("with", "having")
+        Patterns.matching(One.of("with", "having", "")
                              .followedByOneOf("An", "A", "The", "")
                              .followedByOneOf("([A-Z].*)Of", "([A-Z].*)"));
     
     private static final List<Pattern> UNDERSCORE_PATTERNS = 
-        Patterns.matching(One.of("with_", "having_")
+        Patterns.matching(One.of("with_", "having_", "")
                              .followedByOneOf("an_", "a_", "the_", "")
                              .followedByOneOf("([a-z].*)_of", "([a-z].*)"));
     
