@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.base.Function;
+import com.google.common.base.Supplier;
 import com.timgroup.karg.keywords.typed.TypedKeyword;
 import com.timgroup.karg.keywords.typed.TypedKeywordArgument;
 import com.timgroup.karg.naming.TargetName;
@@ -20,7 +21,14 @@ final class KeywordArgumentBuilder<T> implements Function<Map.Entry<String, Obje
         TargetName argName = TargetNameFormatter.LOWER_CAMEL_CASE.parse(entry.getKey());
         String keywordFieldName = argName.formatWith(TargetNameFormatter.UNDERSCORE_SEPARATED).toUpperCase();
         TypedKeyword<T, Object> typedKeyword = getKeyword(recordType, keywordFieldName);
-        return typedKeyword.of(entry.getValue());
+        return typedKeyword.of(realise(entry.getValue()));
+    }
+    
+    private Object realise(Object putativeValue) {
+        if (putativeValue instanceof Supplier) {
+            return ((Supplier<?>) putativeValue).get();
+        }
+        return putativeValue;
     }
 
     @SuppressWarnings("unchecked")
