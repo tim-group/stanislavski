@@ -109,7 +109,7 @@ public class MagicJavaBeanMatcherTest {
     gives_a_meaningful_mismatch_description() {
         assertThat(matcher().withName("Tiberius Caesar").aged(17),
                 AMatcher.that_fails_to_match(person)
-                        .with_the_mismatch_description("A Person whose name was \"Julius Caesar\" and whose age was <42>"));
+                        .with_the_mismatch_description("was a Person whose name was \"Julius Caesar\" and whose age was <42>"));
     }
     
     @Test public void
@@ -118,7 +118,7 @@ public class MagicJavaBeanMatcherTest {
         assertThat(matcher().is_a_civilian(), AMatcher.that_matches(person));
         assertThat(matcher().is_a_superhero(), AMatcher.that_matches(elkman));
         assertThat(matcher().is_a_civilian(), AMatcher.that_fails_to_match(elkman)
-                                                      .with_the_mismatch_description("A Person whose hasSuperpowers was <true>"));
+                                                      .with_the_mismatch_description("was a Person whose hasSuperpowers was <true>"));
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -44,7 +44,7 @@ public class InstanceWithPropertiesMatcher<T> extends TypeSafeDiagnosingMatcher<
             return true;
         }
         
-        mismatchDescription.appendText("A ").appendText(targetClass.getSimpleName()).appendText(" ");
+        mismatchDescription.appendText("was a ").appendText(targetClass.getSimpleName()).appendText(" ");
         boolean first = true;
         for (Matcher<? super T> propertyMatcher : propertyMatchers) {
             if (first) {
