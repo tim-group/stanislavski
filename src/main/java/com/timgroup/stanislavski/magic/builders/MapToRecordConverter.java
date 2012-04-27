@@ -17,13 +17,6 @@ import com.timgroup.karg.reflection.ReflectiveAccessorFactory;
 
 public abstract class MapToRecordConverter<T> implements Function<Map<String, Object>, T>{
     
-    @SuppressWarnings("unchecked")
-    public static <T> MapToRecordConverter<T> forClass(Class<T> recordType) {
-        Preconditions.checkArgument(recordType.getConstructors().length == 1,
-                "%s has more than one constructor - please specify which one to use", recordType);
-        return forClass(recordType, (Constructor<T>) recordType.getConstructors()[0]);
-    }
-    
     public static <T> MapToRecordConverter<T> forClass(Class<T> recordType, Constructor<T> constructor) {
         int numberOfParameters = constructor.getParameterTypes().length;
         if (numberOfParameters == 0) {
@@ -35,13 +28,6 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
         }
         
         return new AnnotatedConstructorMapToRecordConverter<T>(recordType, constructor);
-    }
-    
-    protected Object realise(Object putativeValue) {
-        if (putativeValue instanceof Supplier) {
-            return ((Supplier<?>) putativeValue).get();
-        }
-        return putativeValue;
     }
     
     private static final class AssigningMapToRecordConverter<T> extends MapToRecordConverter<T> {
@@ -56,7 +42,7 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
         public T apply(Map<String, Object> fieldValues) {
             final T record = blankRecordSupplier.get();
             for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
-                accessorFactory.getSetter(entry.getKey()).set(record, realise(entry.getValue()));
+                accessorFactory.getSetter(entry.getKey()).set(record, entry.getValue());
             }
             return record;
         }
@@ -93,7 +79,7 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
             for (Annotation[] annotations : constructor.getParameterAnnotations()) {
                 AssignedTo assignedTo = (AssignedTo) Iterables.find(Lists.newArrayList(annotations), Predicates.instanceOf(AssignedTo.class), null);
                 Preconditions.checkNotNull(assignedTo, "Constructor parameter #%d for %s has no @AssignedTo annotation", i, recordType);
-                args[i] = realise(map.get(assignedTo.value()));
+                args[i] = map.get(assignedTo.value());
                 i += 1;
             }
             return args;
