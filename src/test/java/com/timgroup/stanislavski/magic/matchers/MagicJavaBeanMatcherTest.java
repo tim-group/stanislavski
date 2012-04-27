@@ -11,7 +11,6 @@ import com.timgroup.stanislavski.matchers.AMatcher;
 import com.timgroup.stanislavski.reflection.MethodCall;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class MagicJavaBeanMatcherTest {
 
@@ -66,7 +65,7 @@ public class MagicJavaBeanMatcherTest {
     
     @Test public void
     matches_a_property_identified_by_the_method_name() {
-        assertThat(matcher().withName(is("Julius Caesar")),
+        assertThat(matcher().withName(Matchers.equalTo("Julius Caesar")),
                    AMatcher.that_matches(person)
                            .with_the_description("A Person whose name is \"Julius Caesar\""));
     }

@@ -89,7 +89,7 @@ public class JavaBeanPropertyMatcherMaker<T> implements MethodCallInterpreter<Ma
     private <V> Matcher<? super V> getMatcher(MethodCall methodCall) {
         Object firstArgumentValue = methodCall.firstArgument().value();
         if (firstArgumentValue instanceof Matcher) {
-            return (Matcher<? super V>) firstArgumentValue;
+            return Matchers.is((Matcher<? super V>) firstArgumentValue);
         }
         return Matchers.is(firstArgumentValue);
     }
