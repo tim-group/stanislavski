@@ -8,4 +8,4 @@
 
 For a basic introduction, see the wiki articles on [Bean Matching Made Easier (with MagicJavaBeanMatchers)](https://github.com/youdevise/stanislavski/wiki/Magic-Java-Bean-Matchers) and [Builders Without Boilerplate](https://github.com/youdevise/stanislavski/wiki/MagicRecordBuilders).
 
-
+Or see these [slides for a short presentation on the goals of the project](https://docs.google.com/presentation/d/1toioIpW-HjOPlBNEios_KghNjhAaPcDNs8MvxC9MkRs/edit#slide=id.p).
