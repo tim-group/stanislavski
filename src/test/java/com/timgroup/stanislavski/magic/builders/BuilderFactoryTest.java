@@ -22,7 +22,7 @@ public class BuilderFactoryTest {
         BuilderWithIncorrectType with_bar(String bar);
     }
     
-    @Test(expected=IllegalArgumentException.class) public void
+    @Test(expected=NullPointerException.class) public void
     detects_missing_properties() {
         BuilderFactory.validating(BuilderWithMisspeltProperty.class).against(Record.class);
     }
