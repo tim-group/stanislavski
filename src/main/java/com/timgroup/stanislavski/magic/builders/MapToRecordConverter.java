@@ -18,6 +18,9 @@ import com.timgroup.karg.reflection.ReflectiveAccessorFactory;
 public abstract class MapToRecordConverter<T> implements Function<Map<String, Object>, T>{
     
     public static <T> MapToRecordConverter<T> forClass(Class<T> recordType, Constructor<T> constructor) {
+        if (constructor == null) {
+            return new ProxyGeneratingMapToRecordConverter<T>(recordType);
+        }
         int numberOfParameters = constructor.getParameterTypes().length;
         if (numberOfParameters == 0) {
             return new AssigningMapToRecordConverter<T>(recordType);
@@ -45,6 +48,18 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
                 accessorFactory.getSetter(entry.getKey()).set(record, entry.getValue());
             }
             return record;
+        }
+    }
+    
+    private static final class ProxyGeneratingMapToRecordConverter<T> extends MapToRecordConverter<T> {
+        private final Class<T> recordType;
+        
+        public ProxyGeneratingMapToRecordConverter(Class<T> recordType) {
+            this.recordType = recordType;
+        }
+
+        @Override public T apply(Map<String, Object> properties) {
+            return ViewRecord.proxying(recordType, properties);
         }
     }
     

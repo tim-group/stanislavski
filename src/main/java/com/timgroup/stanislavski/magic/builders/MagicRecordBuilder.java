@@ -25,6 +25,11 @@ public final class MagicRecordBuilder {
         private final Class<T> recordType;
         private final Constructor<T> constructor;
         
+        private MagicRecordBuilderMaker(Class<T> recordType) {
+            this.recordType = recordType;
+            this.constructor = null;
+        }
+        
         private MagicRecordBuilderMaker(Class<T> recordType, Constructor<T> constructor) {
             this.recordType = recordType;
             this.constructor = constructor;
@@ -48,6 +53,9 @@ public final class MagicRecordBuilder {
     
     @SuppressWarnings("unchecked")
     public static <T> MagicRecordBuilderMaker<T> building(Class<T> recordType) {
+        if (recordType.isInterface()) {
+            return new MagicRecordBuilderMaker<T>(recordType);
+        }
         Preconditions.checkArgument(recordType.getConstructors().length == 1,
                 "%s has more than one constructor - please specify which one to use", recordType);
         return building(recordType, (Constructor<T>) recordType.getConstructors()[0]);
