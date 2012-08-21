@@ -1,6 +1,7 @@
 package com.timgroup.stanislavski.recording;
 
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -30,7 +31,6 @@ public class CallRecordingSupplierTest {
         public PointBuilder with_y(int y);
     }
     
-    @SuppressWarnings("unchecked")
     @Test public void
     uses_supplied_interpreter_to_translate_call_history_into_object() {
         PointBuilder builder = CallRecordingSupplier.proxying(PointBuilder.class, translator);
@@ -38,13 +38,17 @@ public class CallRecordingSupplierTest {
         final Point testPoint = new Point();
         
         context.checking(new Expectations() {{
-            oneOf(translator).apply(with(Matchers.<MethodCall>contains(
-                AMethodCall.to("with_x").of(PointBuilder.class).with(AnArgument.of(23)),
-                AMethodCall.to("with_y").of(PointBuilder.class).with(AnArgument.of(17)))
+            oneOf(translator).apply(with(containsCalls(AMethodCall.to("with_x").of(PointBuilder.class).with(AnArgument.of(23)),
+                                                       AMethodCall.to("with_y").of(PointBuilder.class).with(AnArgument.of(17)))
             )); will(returnValue(testPoint));
         }});
         
         assertThat(builder.with_x(23).with_y(17).get(), equalTo(testPoint));
         context.assertIsSatisfied();
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Matcher<Iterable<MethodCall>> containsCalls(AMethodCall<?>... methodCalls) {
+        return (Matcher)Matchers.contains(methodCalls);
     }
 }
