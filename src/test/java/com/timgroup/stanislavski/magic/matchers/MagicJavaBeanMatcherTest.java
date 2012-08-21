@@ -28,6 +28,10 @@ public class MagicJavaBeanMatcherTest {
         public int getAge() {
             return age;
         }
+        
+        public boolean isAPensioner() {
+            return age > 65;
+        }
     }
     
     public static interface PersonMatcher extends Matcher<Person> {
@@ -45,6 +49,9 @@ public class MagicJavaBeanMatcherTest {
         
         @AddressesProperty("hasSuperpowers") @ChecksBoolean(false)
         public PersonMatcher is_a_civilian();
+        
+        @AddressesProperty("aPensioner") @ChecksBoolean(true)
+        public PersonMatcher is_a_pensioner();
     }
     
     public static final class ForenameSurnameMatcher implements MethodCallInterpreter<Matcher<?>> {
@@ -132,5 +139,11 @@ public class MagicJavaBeanMatcherTest {
     can_match_null_literals() {
         Person nemo = new Person(null, 0, false);
         assertThat(matcher().with_the_name_of(null), AMatcher.that_matches(nemo));
+    }
+    
+    @Test public void
+    supports_is_methods() {
+        Person methuselah = new Person("Methuselah", 120, false);
+        assertThat(matcher().is_a_pensioner(), AMatcher.that_matches(methuselah));
     }
 }
