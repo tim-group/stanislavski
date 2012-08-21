@@ -1,5 +1,6 @@
 package com.timgroup.stanislavski.recording;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -29,7 +30,6 @@ public class InterceptingMethodCallRecorderTest {
         String greet();
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void passes_call_history_to_final_call_handler_if_call_matches_predicate() {
         Greeter greeter = InterceptingMethodCallRecorder.proxying(Greeter.class,
@@ -45,10 +45,9 @@ public class InterceptingMethodCallRecorderTest {
                will(returnValue(true));
             
             oneOf(finalCallHandler).handle(with(AMethodCall.to("greet").of(Greeter.class)),
-                                          with(Matchers.<MethodCall>contains(
-                AMethodCall.to("withName").of(Greeter.class).with(AnArgument.of("Dominic")),
-                AMethodCall.to("withGreeting").of(Greeter.class).with(AnArgument.of("Hello"))
-            ))); will(returnValue("Hello Dominic"));
+                                           with(containsCalls(AMethodCall.to("withName").of(Greeter.class).with(AnArgument.of("Dominic")),
+                                                              AMethodCall.to("withGreeting").of(Greeter.class).with(AnArgument.of("Hello"))))); 
+               will(returnValue("Hello Dominic"));
         }});
         
         assertThat(greeter.withName("Dominic")
@@ -56,5 +55,10 @@ public class InterceptingMethodCallRecorderTest {
                           .greet(),
                    equalTo("Hello Dominic"));
     }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Matcher<Iterable<MethodCall>> containsCalls(AMethodCall<?>... methodCalls) {
+        return (Matcher)Matchers.contains(methodCalls);
+    };
 
 }
