@@ -2,6 +2,7 @@ package com.timgroup.stanislavski.magic.matchers;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.base.Joiner;
@@ -162,5 +163,21 @@ public class MagicJavaBeanMatcherTest {
     matches_inherited_properties() {
         Person willie = new Person("Willie Jones", 52, false);
         assertThat(matcher().withWarmBlooded(true), AMatcher.that_matches(willie));
+    }
+    
+    public static interface AnimalMatcher<M extends AnimalMatcher<M, T>, T extends Animal> extends Matcher<T> {
+        public M withWarmBlooded(boolean warmBlooded);
+    }
+    
+    public static interface InheritingPersonMatcher extends AnimalMatcher<InheritingPersonMatcher, Person> {
+        public PersonMatcher withName(String name);
+    }
+    
+    @Ignore("https://github.com/youdevise/stanislavski/issues/2")
+    @Test public void
+    matches_using_inherited_matchings() {
+        Person willie = new Person("Willie Jones", 52, false);
+        InheritingPersonMatcher matcher = MagicJavaBeanMatcher.matching(Person.class).using(InheritingPersonMatcher.class);
+        assertThat(matcher.withWarmBlooded(true).withName("Willie Jones"), AMatcher.that_matches(willie));
     }
 }
