@@ -14,12 +14,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MagicJavaBeanMatcherTest {
 
-    public static final class Person {
+    public static class Animal {
+        public final boolean warmBlooded;
+        
+        private Animal(boolean warmBlooded) {
+            this.warmBlooded = warmBlooded;
+        }
+    }
+    
+    public static final class Person extends Animal {
         public final String name;
         private final int age;
         public final boolean hasSuperpowers;
-
+        
         public Person(String name, int age, boolean hasSuperpowers) {
+            super(true);
             this.name = name;
             this.age = age;
             this.hasSuperpowers = hasSuperpowers;
@@ -52,6 +61,8 @@ public class MagicJavaBeanMatcherTest {
         
         @AddressesProperty("aPensioner") @ChecksBoolean(true)
         public PersonMatcher is_a_pensioner();
+        
+        public PersonMatcher withWarmBlooded(boolean warmBlooded);
     }
     
     public static final class ForenameSurnameMatcher implements MethodCallInterpreter<Matcher<?>> {
@@ -145,5 +156,11 @@ public class MagicJavaBeanMatcherTest {
     supports_is_methods() {
         Person methuselah = new Person("Methuselah", 120, false);
         assertThat(matcher().is_a_pensioner(), AMatcher.that_matches(methuselah));
+    }
+    
+    @Test public void
+    matches_inherited_properties() {
+        Person willie = new Person("Willie Jones", 52, false);
+        assertThat(matcher().withWarmBlooded(true), AMatcher.that_matches(willie));
     }
 }
