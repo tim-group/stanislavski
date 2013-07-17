@@ -14,6 +14,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.timgroup.karg.naming.TargetName;
+import com.timgroup.karg.naming.TargetNameParser;
 
 import static com.timgroup.karg.naming.TargetNameFormatter.LOWER_CAMEL_CASE;
 
@@ -42,7 +43,7 @@ public class ViewRecord<T> implements InvocationHandler {
     }
     
     private static Predicate<Method> matchingPropertyName(String propertyName) {
-        final TargetName targetName = LOWER_CAMEL_CASE.parse(propertyName);
+        final TargetName targetName = TargetNameParser.CAMEL_CASE.parse(propertyName);
         return new Predicate<Method>() {
             @Override public boolean apply(Method method) {
                 String methodName = method.getName();

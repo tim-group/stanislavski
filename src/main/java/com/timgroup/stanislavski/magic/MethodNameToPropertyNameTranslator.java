@@ -1,20 +1,18 @@
 package com.timgroup.stanislavski.magic;
 
+import static com.timgroup.karg.naming.TargetNameFormatter.LOWER_CAMEL_CASE;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Function;
-import com.timgroup.karg.naming.TargetNameFormatter;
+import com.timgroup.karg.naming.TargetNameParser;
 import com.timgroup.stanislavski.interpreters.AddressesProperty;
 import com.timgroup.stanislavski.interpreters.AnnotationOverride;
 import com.timgroup.stanislavski.interpreters.ExtractorFor;
 import com.timgroup.stanislavski.magic.Patterns.One;
 import com.timgroup.stanislavski.reflection.MethodCall;
-
-import static com.timgroup.karg.naming.TargetNameFormatter.LOWER_CAMEL_CASE;
-import static com.timgroup.karg.naming.TargetNameFormatter.UNDERSCORE_SEPARATED;
-import static com.timgroup.karg.naming.TargetNameFormatter.UPPER_CAMEL_CASE;
 
 public class MethodNameToPropertyNameTranslator implements Function<String, String> {
 
@@ -40,17 +38,17 @@ public class MethodNameToPropertyNameTranslator implements Function<String, Stri
         if (methodName.contains("_")) {
             return interpret(methodName,
                              UNDERSCORE_PATTERNS,
-                             UNDERSCORE_SEPARATED);
+                             TargetNameParser.UNDERSCORE_SEPARATED);
         }
         
         return interpret(methodName,
                          NO_UNDERSCORE_PATTERNS,
-                         UPPER_CAMEL_CASE);
+                         TargetNameParser.CAMEL_CASE);
     }
     
     private String interpret(String methodName,
                              List<Pattern> patterns,
-                             TargetNameFormatter parser) {
+                             TargetNameParser parser) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(methodName);
             if (matcher.matches()) {

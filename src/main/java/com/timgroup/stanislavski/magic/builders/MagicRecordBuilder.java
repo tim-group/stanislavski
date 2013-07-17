@@ -7,6 +7,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
+import com.timgroup.karg.keywords.typed.TypedKeywordArguments;
+import com.timgroup.karg.valuetypes.ValueType;
 import com.timgroup.stanislavski.interpreters.AddressesProperty;
 import com.timgroup.stanislavski.interpreters.AnnotationOverride;
 import com.timgroup.stanislavski.interpreters.ExtractorFor;
@@ -22,8 +24,8 @@ public final class MagicRecordBuilder {
     
     public static class MagicRecordBuilderMaker<T> {
         
-        private final Class<T> recordType;
-        private final Constructor<T> constructor;
+        protected final Class<T> recordType;
+        protected final Constructor<T> constructor;
         
         private MagicRecordBuilderMaker(Class<T> recordType) {
             this.recordType = recordType;
@@ -42,12 +44,29 @@ public final class MagicRecordBuilder {
                                                                  .chain(AnnotationOverride.<AddressesProperty, String>obtainingValueOf(AddressesProperty.class)))
                             .obtainingValueWith(ExtractorFor.theFirstArgument().compose(realise));
             
-            MapToRecordConverter<T> converter = MapToRecordConverter.forClass(recordType, constructor);
+            MapToRecordConverter<T> converter = getMapToRecordConverter();
             Function<Iterable<MethodCall>, T> recordBuildingInterpreter = Functions.compose(converter, interpreter);
             
             return InterceptingMethodCallRecorder.proxying(interfaceType,
                                                            new MethodNameMatcher("get", Supplier.class),
                                                            new InterpretingFinalCallHandler<T>(recordBuildingInterpreter));
+        }
+        
+        protected MapToRecordConverter<T> getMapToRecordConverter() {
+            return MapToRecordConverter.forClass(recordType, constructor);
+        }
+    }
+    
+    public static class MagicValueTypeBuilderMaker<T extends ValueType<T>> extends MagicRecordBuilderMaker<T> {
+        
+        private final TypedKeywordArguments<T> fields;
+        public MagicValueTypeBuilderMaker(Class<T> recordType, Constructor<T> constructor, TypedKeywordArguments<T> fields) {
+            super(recordType, constructor);
+            this.fields = fields;
+        }
+    
+        protected MapToRecordConverter<T> getMapToRecordConverter() {
+            return MapToRecordConverter.forClass(recordType, constructor, fields);
         }
     }
     
@@ -63,6 +82,21 @@ public final class MagicRecordBuilder {
     
     public static <T> MagicRecordBuilderMaker<T> building(Class<T> recordType, Constructor<T> constructor) {
         return new MagicRecordBuilderMaker<T>(recordType, constructor);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T extends ValueType<T>> MagicRecordBuilderMaker<T> updating(T instance) {
+        Class<T> recordType = (Class<T>) instance.getClass();
+        Constructor<T> constructor;
+        try {
+            constructor = recordType.getDeclaredConstructor(TypedKeywordArguments.class);
+        } catch (SecurityException e) {
+            throw new RuntimeException(String.format("Cannot update class %s reflectively", recordType));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(String.format("Class %s does not have a TypedKeywordArguments constructor"));
+        }
+        
+        return new MagicValueTypeBuilderMaker<T>(recordType, constructor, instance.fields());
     }
     
     private MagicRecordBuilder() { }

@@ -1,5 +1,8 @@
 package com.timgroup.stanislavski.magic.builders;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -8,15 +11,13 @@ import com.google.common.base.Supplier;
 import com.timgroup.karg.keywords.typed.TypedKeyword;
 import com.timgroup.karg.keywords.typed.TypedKeywordArguments;
 import com.timgroup.karg.keywords.typed.TypedKeywords;
+import com.timgroup.karg.valuetypes.ValueType;
 import com.timgroup.stanislavski.interpreters.AddressesProperty;
 import com.timgroup.stanislavski.magic.matchers.MagicJavaBeanMatcher;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 public class MagicTypedKeywordRecordBuilderTest {
 
-    public static class TypedKeywordRecord {
+    public static class TypedKeywordRecord extends ValueType<TypedKeywordRecord> {
         
         public static final TypedKeyword<TypedKeywordRecord, String> NAME = TypedKeywords.newTypedKeyword();
         public final String name;
@@ -33,6 +34,7 @@ public class MagicTypedKeywordRecordBuilderTest {
         private final TypedKeywordArguments<TypedKeywordRecord> properties;
         
         public TypedKeywordRecord(TypedKeywordArguments<TypedKeywordRecord> args) {
+            super(args);
             this.name = NAME.from(args);
             this.age = AGE.from(args);
             this.favouriteColour = FAVOURITE_COLOUR.from(args);
@@ -55,10 +57,17 @@ public class MagicTypedKeywordRecordBuilderTest {
             
             @AddressesProperty("quest")
             Builder havingTheNobleQuest(String quest);
+            
+            @AddressesProperty("quest")
+            Builder having_the_noble_quest(String quest);
         }
         
         public static Builder builder() {
             return MagicRecordBuilder.building(TypedKeywordRecord.class).using(Builder.class);
+        }
+        
+        public static Builder updating(TypedKeywordRecord instance) {
+            return MagicRecordBuilder.updating(instance).using(Builder.class);
         }
     }
     
@@ -82,6 +91,7 @@ public class MagicTypedKeywordRecordBuilderTest {
                 .with_name("Dominic")
                 .with_age(37)
                 .with_favourite_colour("Crimson")
+                .having_the_noble_quest("I seek the Grail")
                 .get();
         
         assertThat(record, a_record().with_name(Matchers.startsWith("D"))
@@ -95,6 +105,7 @@ public class MagicTypedKeywordRecordBuilderTest {
                 .withName("Dominic")
                 .withAge(37)
                 .withFavouriteColour("Crimson")
+                .havingTheNobleQuest("I seek the Grail")
                 .get();
         
         assertThat(record.name, is("Dominic"));
@@ -103,11 +114,22 @@ public class MagicTypedKeywordRecordBuilderTest {
     }
     
     @Test public void
-    permits_aliasing_of_methods_using_annotations() {
+    updates_a_record_if_it_is_a_value_type() {
         TypedKeywordRecord record = TypedKeywordRecord.builder()
-                .havingTheNobleQuest("I seek the Castle Anthrax!")
+                .with_name("Dominic")
+                .with_age(37)
+                .with_favourite_colour("Crimson")
+                .having_the_noble_quest("I seek the Grail")
                 .get();
         
-        assertThat(record, a_record().having_the_noble_quest("I seek the Castle Anthrax!"));
+        TypedKeywordRecord updatedRecord = TypedKeywordRecord.updating(record)
+                .with_age(38)
+                .having_the_noble_quest("I want a pony")
+                .get();
+        
+        assertThat(updatedRecord, a_record().with_name(Matchers.startsWith("D"))
+                                                .with_age(38)
+                                                .with_favourite_colour("Crimson")
+                                                .having_the_noble_quest("I want a pony"));
     }
 }

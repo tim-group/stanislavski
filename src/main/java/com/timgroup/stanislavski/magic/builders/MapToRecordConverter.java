@@ -17,6 +17,7 @@ import com.timgroup.karg.reflection.ReflectiveAccessorFactory;
 
 public abstract class MapToRecordConverter<T> implements Function<Map<String, Object>, T>{
     
+    @SuppressWarnings("unchecked")
     public static <T> MapToRecordConverter<T> forClass(Class<T> recordType, Constructor<T> constructor) {
         if (constructor == null) {
             return new ProxyGeneratingMapToRecordConverter<T>(recordType);
@@ -27,10 +28,19 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
         }
         
         if (numberOfParameters == 1 && constructor.getParameterTypes()[0].equals(TypedKeywordArguments.class)) {
-            return new TypedKeywordArgumentMapToRecordConverter<T>(recordType);
+            return new TypedKeywordArgumentMapToRecordConverter<T>(recordType, TypedKeywordArguments.<T>of());
         }
         
         return new AnnotatedConstructorMapToRecordConverter<T>(recordType, constructor);
+    }
+        
+    public static <T> MapToRecordConverter<T> forClass(Class<T> recordType, Constructor<T> constructor, TypedKeywordArguments<T> fields) {
+        int numberOfParameters = constructor.getParameterTypes().length;
+        if (numberOfParameters == 1 && constructor.getParameterTypes()[0].equals(TypedKeywordArguments.class)) {
+            return new TypedKeywordArgumentMapToRecordConverter<T>(recordType, fields);
+        }
+        
+        throw new IllegalArgumentException("Cannot update a type that has no TypedKeywordArguments constructor");
     }
     
     private static final class AssigningMapToRecordConverter<T> extends MapToRecordConverter<T> {
@@ -105,8 +115,10 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
         
         private final ComplexConstructorSupplier<T> supplier;
         private final Function<Map.Entry<String, Object>, TypedKeywordArgument<T>> keywordArgumentLookup;
+        private TypedKeywordArguments<T> fields;
         
-        public TypedKeywordArgumentMapToRecordConverter(Class<T> recordType) {
+        public TypedKeywordArgumentMapToRecordConverter(Class<T> recordType, TypedKeywordArguments<T> fields) {
+            this.fields = fields;
             supplier = ComplexConstructorSupplier.of(recordType);
             this.keywordArgumentLookup = new KeywordArgumentBuilder<T>(recordType);
         }
@@ -114,7 +126,7 @@ public abstract class MapToRecordConverter<T> implements Function<Map<String, Ob
         @Override
         public T apply(Map<String, Object> map) {
             Iterable<TypedKeywordArgument<T>> keywordArgs = Iterables.transform(map.entrySet(), keywordArgumentLookup);
-            TypedKeywordArguments<T> arguments = TypedKeywordArguments.of(Lists.newArrayList(keywordArgs));
+            TypedKeywordArguments<T> arguments = fields.with(Lists.newArrayList(keywordArgs));
             return supplier.withArg(arguments).get();
         }
     }
