@@ -10,7 +10,7 @@
 
   <groupId>com.timgroup</groupId>
   <artifactId>stanislavski</artifactId>
-  <version>0.6-SNAPSHOT</version>
+  <version>0.6</version>
   <packaging>jar</packaging>
 
   <name>stanislavski</name>
