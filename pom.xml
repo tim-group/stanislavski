@@ -43,13 +43,13 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>14.0.1</version>
+      <version>15.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.timgroup</groupId>
       <artifactId>karg</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -73,7 +73,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit-dep</artifactId>
-      <version>4.8.2</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
